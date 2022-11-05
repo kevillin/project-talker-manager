@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const { appendFile } = require('fs');
 
 function generateToken() {
   return crypto.randomBytes(8).toString('hex');
@@ -30,6 +31,15 @@ const validateAutorizationAndName = (req, res, next) => {
   if (name.length < 3) {
     return res.status(400).json({ message: 'O "name" deve ter pelo menos 3 caracteres' });
   }
+
+  return next();
+};
+
+const validateAutorization = (req, res, next) => {
+  const { authorization } = req.headers;
+
+  if (!authorization) return res.status(401).json({ message: 'Token não encontrado' });
+  if (authorization.length < 16) return res.status(401).json({ message: 'Token inválido' });
 
   return next();
 };
@@ -76,6 +86,7 @@ const validateTalk2 = (req, res, next) => {
 module.exports = {
   generateToken,
   validateFields,
+  validateAutorization,
   validateAutorizationAndName,
   validateAge,
   validateTalk,

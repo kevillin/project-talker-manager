@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const { generateToken, validateFields, validateAutorizationAndName,
   validateAge,
   validateTalk,
+  validateAutorization,
   validateTalk2 } = require('./middlewares');
 
 const talkersArchive = path.resolve(__dirname, './talker.json');
@@ -69,4 +70,32 @@ app.post('/talker',
     await fs.writeFile(talkersArchive, JSON.stringify(newPersonFile));
 
     return res.status(201).json(newPerson);
+  });
+
+app.put('/talker/:id',
+  validateAutorizationAndName,
+  validateAge,
+  validateTalk,
+  validateTalk2, async (req, res) => {
+    const { id } = req.params;
+    const info = req.body;
+    const result = await fs.readFile(talkersArchive, 'utf-8');
+    const parseTalkers = JSON.parse(result);
+    const newPerson = { id: Number(id), ...info };
+    const editTalker = parseTalkers
+      .map((talk) => (talk.id === Number(id) ? { id: talk.id, ...newPerson } : talk));
+      // const response = editTalker[id - 1];
+    await fs.writeFile(talkersArchive, JSON.stringify(editTalker));
+  res.status(200).json(newPerson);
+});
+
+app.delete('/talker/:id', validateAutorization, async (req, res) => {
+  const { id } = req.params;
+  const result = await fs.readFile(talkersArchive, 'utf-8');
+  const parseTalkers = JSON.parse(result);
+  const editTalker = parseTalkers
+    .filter((talk) => talk.id !== Number(id));
+  // const response = editTalker[id - 1];
+  await fs.writeFile(talkersArchive, JSON.stringify(editTalker));
+  res.sendStatus(204);
 });
