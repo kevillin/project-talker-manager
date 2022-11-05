@@ -1,5 +1,4 @@
 const crypto = require('crypto');
-const { appendFile } = require('fs');
 
 function generateToken() {
   return crypto.randomBytes(8).toString('hex');
