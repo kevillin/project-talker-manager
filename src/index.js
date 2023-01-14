@@ -46,11 +46,7 @@ app.get('/talker/:id', async (req, res) => {
 });
 
 app.post('/login', validateFields, async (_req, res) => {
-  // const result = await fs.readFile(talkersArchive, 'utf-8');
   const tokenGen = generateToken();
-  // const newPerson = { ...req.body };
-  // const newPersonFile = [...JSON.parse(result), newPerson];
-  // await fs.writeFile(talkersArchive, JSON.stringify(newPersonFile));
 
   res.status(HTTP_OK_STATUS).json({ token: tokenGen });
 });
